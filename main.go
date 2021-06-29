@@ -138,23 +138,7 @@ func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
 func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.PostFormValue("title")
 	body := r.PostFormValue("body")
-
-	errors := make(map[string]string)
-
-	// 验证标题
-	if title == "" {
-		errors["title"] = "标题不能为空"
-	} else if utf8.RuneCountInString(title) < 3 || utf8.RuneCountInString(title) > 40 {
-		errors["title"] = "标题长度需介于 3-40"
-	}
-
-	// 验证内容
-	if body == "" {
-		errors["body"] = "内容不能为空"
-	} else if utf8.RuneCountInString(body) < 10 {
-		errors["body"] = "内容长度需大于或等于 10 个字节"
-	}
-
+	errors := validateArticleFormData(title, body)
 	// 检查是否有错误
 	if len(errors) == 0 {
 		fmt.Fprint(w, "验证通过!<br>")
@@ -263,21 +247,7 @@ func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		title := r.PostFormValue("title")
 		body := r.PostFormValue("body")
 
-		errors := make(map[string]string)
-
-		// 验证标题
-		if title == "" {
-			errors["title"] = "标题不能为空"
-		} else if utf8.RuneCountInString(title) < 3 || utf8.RuneCountInString(title) > 40 {
-			errors["title"] = "标题长度需介于 3-40"
-		}
-
-		// 验证内容
-		if body == "" {
-			errors["body"] = "内容不能为空"
-		} else if utf8.RuneCountInString(body) < 10 {
-			errors["body"] = "内容长度需大于或等于 10 个字节"
-		}
+		errors := validateArticleFormData(title, body)
 
 		if len(errors) == 0 {
 
@@ -328,6 +298,25 @@ func getArticleByID(id string) (Article, error) {
 	query := "SELECT * FROM articles WHERE id = ?"
 	err := db.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Body)
 	return article, err
+}
+
+func validateArticleFormData(title string, body string) map[string]string {
+	errors := make(map[string]string)
+
+	// 验证标题
+	if title == "" {
+		errors["title"] = "标题不能为空"
+	} else if utf8.RuneCountInString(title) < 3 || utf8.RuneCountInString(title) > 40 {
+		errors["title"] = "标题长度需介于 3-40"
+	}
+
+	// 验证内容
+	if body == "" {
+		errors["body"] = "内容不能为空"
+	} else if utf8.RuneCountInString(body) < 10 {
+		errors["body"] = "内容长度需大于或等于 10 个字节"
+	}
+	return errors
 }
 
 func forceHTMLMiddleware(next http.Handler) http.Handler {
