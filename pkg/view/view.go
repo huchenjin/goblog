@@ -4,14 +4,25 @@ import (
 	"fmt"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
+	"html/template"
 	"io"
 	"path/filepath"
 	"strings"
-	"text/template"
 )
 
-// Render 渲染视图
+// D 是 map[string]interface{} 的简写
+type D map[string]interface{}
+
 func Render(w io.Writer, data interface{}, tplFiles ...string) {
+	RenderTemplate(w, "app", data, tplFiles...)
+}
+
+func RenderSimple(w io.Writer, data interface{}, tplFiles ...string) {
+	RenderTemplate(w, "simple", data, tplFiles...)
+}
+
+// RenderTemplate 渲染视图
+func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...string) {
 	// 1 设置模板相对路径
 	viewDir := "resources/views/"
 
@@ -35,7 +46,7 @@ func Render(w io.Writer, data interface{}, tplFiles ...string) {
 	logger.LogError(err)
 
 	// 6 渲染模板
-	err = tmpl.ExecuteTemplate(w, "app", data)
+	err = tmpl.ExecuteTemplate(w, name, data)
 	if err != nil {
 		fmt.Println(err)
 	}
