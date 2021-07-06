@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"goblog/app/models/article"
 	"goblog/bootstrap"
 	"goblog/pkg/database"
 	"goblog/pkg/logger"
@@ -182,10 +183,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 	id := getRouteVariable("id", r)
-	article, err := getArticleByID(id)
-	if err != nil {
-		return
-	}
+	article, err := article.Get(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// 3.1 数据未找到
