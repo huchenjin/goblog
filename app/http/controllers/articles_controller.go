@@ -84,7 +84,8 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 		}
 		_article.Create()
 		if _article.ID > 0 {
-			fmt.Fprint(w, "插入成功，ID 为"+_article.GetStringID())
+			showURL := route.Name2URL("articles.show", "id", _article.GetStringID())
+			http.Redirect(w, r, showURL, http.StatusFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "创建文章失败，请联系管理员")
@@ -99,7 +100,7 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
-	view.Render(w, view.D{}, "articles.create")
+	view.Render(w, view.D{}, "articles.create", "articles._form_field")
 }
 
 func (*ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
