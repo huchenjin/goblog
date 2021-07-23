@@ -43,7 +43,7 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// 4. 验证成功，创建数据
 		_user.Create()
-
+		auth.Login(_user)
 		if _user.ID > 0 {
 			http.Redirect(w, r, "/", http.StatusFound)
 		} else {
