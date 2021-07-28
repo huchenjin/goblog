@@ -19,7 +19,7 @@ func Get(idStr string) (Article, error) {
 
 func GetAll() ([]Article, error) {
 	var articles []Article
-	if err := model.DB.Find(&articles).Error; err != nil {
+	if err := model.DB.Order("id desc").Find(&articles).Error; err != nil {
 		return articles, err
 	}
 	return articles, nil
